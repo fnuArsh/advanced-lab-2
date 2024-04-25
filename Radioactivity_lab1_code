@@ -1,3 +1,4 @@
+#lab1 code
 using CSV, DataFrames, Plots
 
 # Set the backend to use PDF for high-quality, vector-based output
