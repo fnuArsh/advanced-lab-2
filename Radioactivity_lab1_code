@@ -1,0 +1,32 @@
+using CSV, DataFrames, Plots
+
+# Set the backend to use PDF for high-quality, vector-based output
+default(fmt = :pdf)
+
+# Read the data
+file = CSV.read("/Users/fnu/Desktop/Spring 2024/Advanced Lab 2/Radioactivity/Day2/lab1.tsv", DataFrame)
+
+# Extract voltage and counts
+voltage = parse.(Int, file[10:21, 2])  # Convert strings to integers
+counts = parse.(Int, file[10:21, 3])    # Convert strings to integers
+
+# Calculate the slope between consecutive points as a percentage
+slope_percentage = [100 * (counts[i] - counts[i-1]) / counts[i] / (voltage[i] - voltage[i-1]) for i in 2:length(counts)]
+
+# Find slope points as annotations
+slope_annotations = [(voltage[i], counts[i], slope_percentage[i-1]) for i in 2:length(counts)]
+
+# Plot voltage vs counts as a line plot
+plot(voltage, counts, xlabel="Voltage", ylabel="Counts", label="", linewidth=2)
+
+# Add slope points as annotations using a for loop
+for (x, y, s) in slope_annotations
+    scatter!([x], [y], markersize=2, color=:black)  # Adjust markersize here
+    annotate!([(x, y, text(string(round(s, digits=2)), :right, 8))])
+end
+
+# Add legend and title with font specification
+plot!(legend=false, title="Geiger counter optimal voltage plateau", titlefontsize=12)
+
+# Save the plot as a PDF
+savefig("geiger_counter_plot.pdf")
